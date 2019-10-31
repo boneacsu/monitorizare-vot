@@ -24,6 +24,11 @@ namespace VoteMonitor.Api.Core.Services.Impl
             var message2 = new MulticastMessage()
             {
                 Tokens = registrationTokens,
+                Notification = new Notification()
+                {
+                    Title = title,
+                    Body = message
+                },
                 Data = new Dictionary<string, string>()
                 {
                     { "title", title },
