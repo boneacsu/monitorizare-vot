@@ -32,13 +32,23 @@ namespace VoteMonitor.Api.Observer.Handlers
 
         public Task<int> Handle(NotificationRegDataCommand request, CancellationToken cancellationToken)
         {
-            NotificationRegData notificationReg = new NotificationRegData();
+            var regDataResult = _context.NotificationRegData.AsQueryable().Where(regData => regData.ObserverId == request.ObserverId)
+               .Where(regData => regData.ChannelName == request.ChannelName).FirstOrDefault();
+            if (null == regDataResult)
+            {
+                NotificationRegData notificationReg = new NotificationRegData();
 
-            notificationReg.ObserverId = request.ObserverId;
-            notificationReg.ChannelName = request.ChannelName;
-            notificationReg.Token = request.Token;
+                notificationReg.ObserverId = request.ObserverId;
+                notificationReg.ChannelName = request.ChannelName;
+                notificationReg.Token = request.Token;
 
-            _context.NotificationRegData.Add(notificationReg);
+                _context.NotificationRegData.Add(notificationReg);
+            }
+            else
+            {
+                regDataResult.Token = request.Token;
+                _context.Update(regDataResult);
+            }
 
             return _context.SaveChangesAsync();
         }
